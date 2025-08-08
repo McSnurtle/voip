@@ -1,3 +1,5 @@
+@echo OFF
+
 echo "Running installation of https://github.com/McSnurtle/voip.git"
 
 python -m venv venv
