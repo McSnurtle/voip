@@ -14,7 +14,7 @@ config: dict[str, Any] = config_reader.Config("client")
 frames_per_buffer: int = config["audio"]["chunk_size"] * config["audio"]["mystery_number"]
 interface = pyaudio.PyAudio()
 silence_value: int = 0
-bogus_data: bytes = silence_value.to_bytes(2) * config["audio"]["chunk_size"]
+bogus_data: bytes = silence_value.to_bytes(2, byteorder="little") * config["audio"]["chunk_size"]
 
 
 # ========== Functions ==========
