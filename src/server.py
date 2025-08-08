@@ -39,7 +39,7 @@ class Server:
         """Repeatedly call this to accept chunks over the server socket and handle them accordingly."""
 
         data, address = self.socket.recvfrom(FRAMES_PER_BUFFER * 2 + 2) # Sock010 numbers
-        data, address = self.socket.recvfrom(8192)
+        # data, address = self.socket.recvfrom(8192)
         formatted_data = data[2:]
 
         # queue chunk to be played when possible:
