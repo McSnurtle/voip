@@ -1,5 +1,7 @@
 # Project-specific files
 chache/*
+usr/conf/client.json
+usr/conf/server.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
