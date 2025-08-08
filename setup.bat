@@ -1,4 +1,4 @@
-echo "DOING THE STUFF THE THING THE STUFF THINGS"
+echo "Running installation of https://github.com/McSnurtle/voip.git"
 
 python -m venv venv
 

@@ -19,7 +19,7 @@ Run `server.bat` or `server.sh` to accept and playback data from clients.
 Run `client.bat ` or `client.sh` to send microphone data to a server.
 
 ## Configuration
-Below is a tour of `usr/conf/client.json` options:
+### `usr/conf/client.json`
 | Section | ID | Default | Type | Description |
 |---------|----|---------|------|-------------|
 | Networking | | | Section | Configuration options for how things are sent over the interwebs. |
@@ -31,3 +31,16 @@ Below is a tour of `usr/conf/client.json` options:
 | | `chunk_size` | 441 | Integer | The size of chunks to get from the microphone and send to the server. Do not change this unless your server provider has told you to. |
 | | `mysery_number` | 1 | Integer | The coefficient to muliply the `chunk_size` with to determine the number of frames per buffer in PyAudio. |
 | | `suppression_level` | 3 | Integer | The level of aggression when applying noise suppression to the microphone. Range: 1 - 3. CAUTION: not fully implemented. |
+
+### `usr/conf/server.json`
+| Section | ID | Default | Type | Description |
+|---------|----|---------|------|-------------|
+| Audio | | | Section | Configuration options for how to handle incoming audio, should match the incoming audio specifications of the client. |
+| | `sample_rate` | 44100 | Integer | The sample rate of the incoming traffic. |
+| | `chunk_size` | 441 | Integer | The chunk size of the incoming traffic. |
+| | `mystery_number` | 1 | Integer | The coefficient of `chunk_size` to get the frames per buffer, should match the total frames per buffer of the client. |
+| | `hear_audio` | true | Boolean | Whether to playback the incoming audio data on the server host's speakers. Conflicts with `relay_audio`. |
+| Networking | | | Section | Configuration options for how the server is networked. |
+| | `server_ip` | 0.0.0.0 | String | The ip to bind the server to. It is recommended to leave as is, since "127.0.0.1" will only listen to incoming traffic from the local PC, and anything else may produce undefined behaviour. |
+| | `server_port` | 20000 | Integer | The port to bind the server to. It is recommended to leave as is for compatibility. |
+| | `relay_audio` | false | Boolean | Whether to broadcast the incoming traffic to all clients sending it, functions as a group call. Conflicts with `hear_audio`. CAUTION: not fully implemented! |
