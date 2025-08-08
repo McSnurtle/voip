@@ -1,7 +1,7 @@
-@echo OFF
+#!/bin/bash
 
 echo "Running server script for voip..."
 
-call .\venv\Scripts\activate
+source ./venv/bin/activate
 
 python src/server.py
