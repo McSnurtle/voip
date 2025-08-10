@@ -6,7 +6,7 @@ import time
 import threading
 import queue
 
-from utils import config_reader, audio, noise_supression, path
+from utils import config_reader, audio, path
 from typing import Any
 
 
@@ -36,7 +36,6 @@ class Client:
 
     def send_audio(self, data: bytes):
         self.socket.sendto(
-            # noise_supression.supress(audio.format_audio(data)),
             audio.format_audio(data),
             self.destination
         )    # the UDP way
