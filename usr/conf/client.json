@@ -8,6 +8,6 @@
     "sample_rate": 48000,
     "chunk_size": 441,
     "mystery_number": 1,
-    "supression_level": 3
+    "suppression_level": 3
   }
 }

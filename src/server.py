@@ -1,6 +1,6 @@
 # imports - server.py, by Mc_Snurtle, based on the magic of Soko010 on GitHub
 import socket
-import threading
+# import threading
 from threading import Thread
 from typing import Any
 
@@ -8,7 +8,6 @@ import pyaudio
 import queue
 
 from utils import audio, config_reader
-
 
 # ========== Constants ==========
 RUNNING: bool = True
@@ -38,7 +37,7 @@ class Server:
     def receive_audio(self):
         """Repeatedly call this to accept chunks over the server socket and handle them accordingly."""
 
-        data, address = self.socket.recvfrom(FRAMES_PER_BUFFER * 2 + 2) # Sock010 numbers
+        data, address = self.socket.recvfrom(FRAMES_PER_BUFFER * 2 + 2)  # Sock010 numbers
         # data, address = self.socket.recvfrom(8192)
         formatted_data = data[2:]
 
@@ -57,8 +56,8 @@ class Server:
 
         RUNNING = False
         self.socket.close()
-        self.buffer.put(None)   # sigterm to playback thread
-        self.playback_thread.join() # wait. ***E I G H T***. *** E I G H T ***. *** * * * E I G H T * * * ***.
+        self.buffer.put(None)  # sigterm to playback thread
+        self.playback_thread.join()  # wait. ***E I G H T***. *** E I G H T ***. *** * * * E I G H T * * * ***.
 
 
 if __name__ == "__main__":
