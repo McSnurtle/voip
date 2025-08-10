@@ -2,7 +2,7 @@
 A simple voice over internet protocol server and client written in python.
 
 ## Installation / Quickstart Guide ⏱️
-Running voip requires [Python](<https://github.com/McSnurtle/voip.git>) (tested on version 3)! Make sure you have it installed before doing anything.
+Running voip requires [Python](<https://github.com/McSnurtle/voip.git>) (tested on version 3) and [C++ Redistributables](<https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170>) on Windows! Make sure you have them installed before doing anything.
 Installation has been made extremely simple by the `setup.bat` and `setup.sh` scripts. Run the batch script for Windows installation, and the shell script for Unix.
 
 The install script essentially does the following:
