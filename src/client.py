@@ -3,21 +3,21 @@
 import socket
 import pyaudio
 import time
-import threading
+# import threading
 import queue
 
 from utils import config_reader, audio, path
 from typing import Any
 
-
 # ========== Constants ==========
-RUNNING: bool = True    # program sigterm
+RUNNING: bool = True  # program sigterm
 CONFIG: dict[str, Any] = config_reader.Config("client")
 FORMAT: int = pyaudio.paInt16
-CHANNELS: int = 1    # mono, all that works D:
-RATE: int = CONFIG["audio"]["sample_rate"] # 44100 Hz, or 16000 Hz
-CHUNK_SIZE: int = CONFIG["audio"]["chunk_size"]    # 10 ms somehow?
-FRAMES_PER_BUFFER: int = CHUNK_SIZE * CONFIG["audio"]["mystery_number"]  # huh? Oh I get now (2 hours later I'm not even kidding)
+CHANNELS: int = 1  # mono, all that works D:
+RATE: int = CONFIG["audio"]["sample_rate"]  # 44100 Hz, or 16000 Hz
+CHUNK_SIZE: int = CONFIG["audio"]["chunk_size"]  # 10 ms somehow?
+FRAMES_PER_BUFFER: int = CHUNK_SIZE * CONFIG["audio"][
+    "mystery_number"]  # huh? Oh I get now (2 hours later I'm not even kidding)
 DEVICE_ID: int = CONFIG["audio"]["microphone_id"]
 
 
@@ -38,7 +38,7 @@ class Client:
         self.socket.sendto(
             audio.format_audio(data),
             self.destination
-        )    # the UDP way
+        )  # the UDP way
 
     def terminate(self) -> None:
         self.socket.close()
@@ -58,7 +58,7 @@ class Recorder:
             stream_callback=self.callback
         )
 
-    def callback(self, data: bytes, frame_count: int, *args):
+    def callback(self, data: bytes, *args):
         """A callback for PyAudio streams, registers the recorded chunk of audio to the recording buffer"""
 
         self.buffer.put(data)
@@ -85,11 +85,11 @@ def blocker() -> None:
 
 
 if __name__ == "__main__":
-    destination: tuple[str, int] = CONFIG["networking"]["server_ip"], CONFIG["networking"]["server_port"]
+    target: tuple[str, int] = CONFIG["networking"]["server_ip"], CONFIG["networking"]["server_port"]
 
     audio.list_microphones(True)
 
-    connector = Client(destination)
+    connector = Client(target)
     recorder = Recorder()
 
     while RUNNING:
