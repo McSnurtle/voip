@@ -26,23 +26,37 @@ class Server:
         self.socket.bind(HOST)
         print(f"Server bound and listening on {HOST}")
 
-        self.clients: list[str] = []
+        self.clients: dict[str, int] = {}    # e.x. "192.168.0.182"
         self.threads: list[Thread] = []
         self.buffer = queue.Queue()
-        self.playback_thread = audio.play_stream(self.buffer)
-        self.threads.append(self.playback_thread)
+        if CONFIG["audio"]["hear_audio"] and not CONFIG["networking"]["relay_audio"]:
+            self.playback_thread = audio.play_stream(self.buffer)
+            self.threads.append(self.playback_thread)
 
         # self.next_id: int = 0
 
     def receive_audio(self):
         """Repeatedly call this to accept chunks over the server socket and handle them accordingly."""
 
-        data, address = self.socket.recvfrom(FRAMES_PER_BUFFER * 2 + 2)  # Sock010 numbers
-        # data, address = self.socket.recvfrom(8192)
+        data, client = self.socket.recvfrom(FRAMES_PER_BUFFER * 2 + 2)  # Sock010 numbers
         formatted_data = data[2:]
 
+        self._register_client(client)
+
+        self._broadcast_data(formatted_data, client)
+
+    def _broadcast_data(self, data: bytes, sender: tuple[str, int]) -> None:
         # queue chunk to be played when possible:
-        self.buffer.put(formatted_data)
+        self.buffer.put(data)
+
+        for addr, port in list(self.clients.items()):
+            if addr != sender[0]:
+                self.socket.sendto(data, (addr, port))
+
+    def _register_client(self, client: tuple[str, int]) -> None:
+        addr, port = client
+        if addr not in list(self.clients.keys()):
+            self.clients[addr] = port
 
     def mainloop(self) -> None:
         while RUNNING:
