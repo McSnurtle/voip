@@ -3,7 +3,7 @@
 import socket
 import pyaudio
 import time
-# import threading
+import threading
 import queue
 
 from utils import config_reader, audio, path
@@ -29,6 +29,10 @@ class Client:
         Params:
             :param destination (tuple[str, int]): the IPv4 + port pair to connect with."""
 
+        # playback
+        self.playback_buffer: queue.Queue = queue.Queue()
+        self.playback_thread = audio.play_stream(self.playback_buffer)
+
         # networking
         self.destination: tuple[str, int] = destination
         print("attempting to connect to: " + str(destination))
@@ -40,7 +44,21 @@ class Client:
             self.destination
         )  # the UDP way
 
+    def listen(self):
+        while RUNNING:
+            try:
+                packet, origin = self.socket.recvfrom(FRAMES_PER_BUFFER * 2 + 2)
+                print(f"PLAYBACK DATA CAME FROM {origin}")
+                formatted_data = packet[2:]
+                self.playback_buffer.put(formatted_data)
+            except OSError:
+                pass
+
     def terminate(self) -> None:
+        global RUNNING
+
+        RUNNING = False
+        self.playback_buffer.shutdown()
         self.socket.close()
 
 
@@ -91,6 +109,9 @@ if __name__ == "__main__":
 
     connector = Client(target)
     recorder = Recorder()
+
+    listener_thread: threading.Thread = threading.Thread(target=connector.listen, daemon=True)
+    listener_thread.start()
 
     while RUNNING:
         connector.send_audio(recorder.buffer.get())
