@@ -98,7 +98,6 @@ class Recorder:
 
 def blocker() -> None:
     time.sleep(3)
-    print("\n\n\nSAVING DATA!!!\n\n\n")
     audio.write_data(recorder.history, path.mkpath(path.secrets_dir, "output.wav"))
 
 
