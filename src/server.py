@@ -50,7 +50,6 @@ class Server:
         self.buffer.put(data)
 
         for client in self.clients:
-            print(f"Sending data to {client} from {sender}")
             if client != sender:
                 self.socket.sendto(data, client)
 
