@@ -46,9 +46,13 @@ class Client:
 
     def listen(self):
         while RUNNING:
-            packet, _ = self.socket.recvfrom(FRAMES_PER_BUFFER * 2 + 2)
-            formatted_data = packet[2:]
-            self.playback_buffer.put(formatted_data)
+            try:
+                packet, origin = self.socket.recvfrom(FRAMES_PER_BUFFER * 2 + 2)
+                print(f"PLAYBACK DATA CAME FROM {origin}")
+                formatted_data = packet[2:]
+                self.playback_buffer.put(formatted_data)
+            except OSError:
+                pass
 
     def terminate(self) -> None:
         global RUNNING
