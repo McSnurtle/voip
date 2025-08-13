@@ -48,7 +48,6 @@ class Client:
         while RUNNING:
             try:
                 packet, origin = self.socket.recvfrom(FRAMES_PER_BUFFER * 2 + 2)
-                print(f"PLAYBACK DATA CAME FROM {origin}")
                 formatted_data = packet[2:]
                 self.playback_buffer.put(formatted_data)
             except OSError:
