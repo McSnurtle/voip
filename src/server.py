@@ -29,8 +29,9 @@ class Server:
         self.clients: list[str] = []
         self.threads: list[Thread] = []
         self.buffer = queue.Queue()
-        self.playback_thread = audio.play_stream(self.buffer)
-        self.threads.append(self.playback_thread)
+        if CONFIG["audio"]["hear_audio"] and not CONFIG["networking"]["relay_audio"]:
+            self.playback_thread = audio.play_stream(self.buffer)
+            self.threads.append(self.playback_thread)
 
         # self.next_id: int = 0
 
@@ -38,11 +39,23 @@ class Server:
         """Repeatedly call this to accept chunks over the server socket and handle them accordingly."""
 
         data, address = self.socket.recvfrom(FRAMES_PER_BUFFER * 2 + 2)  # Sock010 numbers
-        # data, address = self.socket.recvfrom(8192)
         formatted_data = data[2:]
 
+        self._register_client(address)
+
+        self._broadcast_data(formatted_data, address)
+
+    def _broadcast_data(self, data: bytes, sender: str) -> None:
         # queue chunk to be played when possible:
-        self.buffer.put(formatted_data)
+        self.buffer.put(data)
+
+        for client in self.clients:
+            if client is not sender:    # semantics ;)
+                self.socket.sendto(data, client)
+
+    def _register_client(self, addr: str) -> None:
+        if addr not in self.clients:
+            self.clients.append(addr)
 
     def mainloop(self) -> None:
         while RUNNING:
