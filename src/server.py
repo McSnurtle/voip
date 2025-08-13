@@ -50,6 +50,7 @@ class Server:
         self.buffer.put(data)
 
         for client in self.clients:
+            print(f"Sending data to {client} from {sender}")
             if client is not sender:    # semantics ;)
                 self.socket.sendto(data, client)
 
