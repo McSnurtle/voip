@@ -26,7 +26,7 @@ class Server:
         self.socket.bind(HOST)
         print(f"Server bound and listening on {HOST}")
 
-        self.clients: list[str] = []
+        self.clients: list[tuple[str, int]] = []    # e.x. ("192.168.0.182", 34890)
         self.threads: list[Thread] = []
         self.buffer = queue.Queue()
         if CONFIG["audio"]["hear_audio"] and not CONFIG["networking"]["relay_audio"]:
@@ -45,7 +45,7 @@ class Server:
 
         self._broadcast_data(formatted_data, address)
 
-    def _broadcast_data(self, data: bytes, sender: str) -> None:
+    def _broadcast_data(self, data: bytes, sender: tuple[str, int]) -> None:
         # queue chunk to be played when possible:
         self.buffer.put(data)
 
@@ -54,7 +54,7 @@ class Server:
             if client != sender:
                 self.socket.sendto(data, client)
 
-    def _register_client(self, addr: str) -> None:
+    def _register_client(self, addr: tuple[str, int]) -> None:
         if addr not in self.clients:
             self.clients.append(addr)
 
