@@ -15,6 +15,7 @@ interface = pyaudio.PyAudio()
 silence_value: int = 0
 bogus_data: bytes = silence_value.to_bytes(2, byteorder="little") * config["audio"]["chunk_size"]
 
+
 # ========== Classes ==========
 class Recorder:
     def __init__(self):
