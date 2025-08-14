@@ -117,3 +117,37 @@ def list_speakers(verbose: bool = True) -> dict[int, str]:
             print(f"{idx}: {value}\n")
 
     return devices
+
+
+def get_default_microphone(verbose: bool = True) -> dict:
+    """Collects all playback devices connected to the host system.
+
+    Params:
+        :param verbose: (bool) whether to print the results to the console.
+    Returns:
+        :return: (dict[int, str]) a dictionary of PyAudio device id to device name."""
+
+    default_id: int = int(interface.get_default_input_device_info()["index"])   # PYRIGHT SHUTUP
+    default_info = interface.get_device_info_by_index(default_id)
+
+    if verbose:
+        print(f"\n\nThe default microphone is:\n\n{default_info}")
+
+    return default_info
+
+
+def get_default_speakers(verbose: bool = True) -> dict:
+    """Collects all playback devices connected to the host system.
+
+    Params:
+        :param verbose: (bool) whether to print the results to the console.
+    Returns:
+        :return: (dict[int, str]) a dictionary of PyAudio device id to device name."""
+
+    default_id: int = int(interface.get_default_output_device_info()["index"])   # PYRIGHT SHUTUP
+    default_info = interface.get_device_info_by_index(default_id)
+
+    if verbose:
+        print(f"\n\nThe default speaker is:\n\n{default_info}")
+
+    return default_info

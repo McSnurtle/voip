@@ -100,6 +100,8 @@ if __name__ == "__main__":
 
     audio.list_microphones(True)
     audio.list_speakers(True)
+    audio.get_default_microphone(True)
+    audio.get_default_speakers(True)
 
     connector = Client(target)
     recorder = Recorder()
