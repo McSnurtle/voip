@@ -94,3 +94,25 @@ def list_microphones(verbose: bool = True) -> dict[int, str]:
             print(f"{idx}: {value}\n")
 
     return devices
+
+
+def list_speakers(verbose: bool = True) -> dict[int, str]:
+    """Collects all playback devices connected to the host system.
+
+    Params:
+        :param verbose: (bool) whether to print the results to the console.
+    Returns:
+        :return: (dict[int, str]) a dictionary of PyAudio device id to device name."""
+
+    devices: dict[int, str] = {}
+    for device_index in range(interface.get_device_count()):
+        device_info = interface.get_device_info_by_index(device_index)
+        if int(device_info["maxInputChannels"]) == 0:
+            devices[device_index] = str(device_info)
+
+    if verbose:
+        print("Available playback devices:\n\n")
+        for idx, value in devices.items():
+            print(f"{idx}: {value}\n")
+
+    return devices
