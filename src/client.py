@@ -96,11 +96,6 @@ class Recorder:
         return b"".join(list(self.buffer.queue))
 
 
-def blocker() -> None:
-    time.sleep(3)
-    audio.write_data(recorder.history, path.mkpath(path.secrets_dir, "output.wav"))
-
-
 if __name__ == "__main__":
     target: tuple[str, int] = CONFIG["networking"]["server_ip"], CONFIG["networking"]["server_port"]
 
