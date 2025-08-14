@@ -57,7 +57,8 @@ def play_stream(stream: queue.Queue) -> threading.Thread:
         channels=1,
         rate=config["audio"]["sample_rate"],
         output=True,
-        frames_per_buffer=frames_per_buffer
+        frames_per_buffer=frames_per_buffer,
+        output_device_index=config["audio"]["speaker_id"]
     )
 
     def _play():
@@ -89,7 +90,7 @@ def list_microphones(verbose: bool = True) -> dict[int, str]:
             devices[device_index] = str(device_info)
 
     if verbose:
-        print("Available recording devices:\n\n")
+        print("\n\nAvailable recording devices:\n\n")
         for idx, value in devices.items():
             print(f"{idx}: {value}\n")
 
@@ -111,7 +112,7 @@ def list_speakers(verbose: bool = True) -> dict[int, str]:
             devices[device_index] = str(device_info)
 
     if verbose:
-        print("Available playback devices:\n\n")
+        print("\n\nAvailable playback devices:\n\n")
         for idx, value in devices.items():
             print(f"{idx}: {value}\n")
 
