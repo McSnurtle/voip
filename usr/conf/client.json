@@ -7,7 +7,7 @@
     "microphone_id": 0,
     "speaker_id": 0,
     "sample_rate": 48000,
-    "chunk_size": 441,
+    "chunk_size": 512,
     "mystery_number": 1,
     "suppression_level": 3
   }
