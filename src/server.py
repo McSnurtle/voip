@@ -11,7 +11,7 @@ from utils import audio, config_reader
 
 # ========== Constants ==========
 RUNNING: bool = True
-CONFIG: dict[str, Any] = config_reader.Config("server")
+CONFIG: config_reader.Config = config_reader.Config("server")
 FORMAT: int = pyaudio.paInt16
 CHANNELS: int = 1
 RATE: int = CONFIG["audio"]["sample_rate"]
@@ -27,6 +27,7 @@ class Server:
         print(f"Server bound and listening on {HOST}")
 
         self.clients: dict[str, int] = {}    # e.x. "192.168.0.182"
+        self.denied: list[str] = [] # to keep track of who has *already* been denied access to prevent log spam.
         self.threads: list[Thread] = []
         self.buffer = queue.Queue()
         if CONFIG["audio"]["hear_audio"] and not CONFIG["networking"]["relay_audio"]:
@@ -41,9 +42,8 @@ class Server:
         data, client = self.socket.recvfrom(FRAMES_PER_BUFFER * 2 + 2)  # Sock010 numbers
         formatted_data = data[2:]
 
-        self._register_client(client)
-
-        self._broadcast_data(formatted_data, client)
+        if self._register_client(client):
+            self._broadcast_data(formatted_data, client)
 
     def _broadcast_data(self, data: bytes, sender: tuple[str, int]) -> None:
         # queue chunk to be played when possible:
@@ -53,11 +53,27 @@ class Server:
             if addr != sender[0]:
                 self.socket.sendto(data, (addr, port))
 
-    def _register_client(self, client: tuple[str, int]) -> None:
+    def _register_client(self, client: tuple[str, int]) -> bool:
+        """Attempts to register the client to accept its transmissions and send future ones to them.
+
+        Params:
+            :param client: (tuple[str, int]) the IPv4 / port pair identifying the client to register.
+
+        Returns:
+            :returns bool: whether the registration was successful. Returns false if `enforce_whitelist` is `true` and the address is not whitelisted."""
+
         addr, port = client
-        if addr not in list(self.clients.keys()):
+        if CONFIG["networking"]["enforce_whitelist"] and addr not in CONFIG.whitelist:
+            if addr not in self.denied: # inversion could make this better!
+                print(f"Connection attempt was made from {addr, port} but they are not on the whitelist so they were denied. Future attempts from this client will not be logged here.")
+                self.denied.append(addr)
+            return False
+        elif addr not in list(self.clients.keys()):
             print(f"Accepting client {addr, port}! They will receive all future transmissions.")
             self.clients[addr] = port
+            return True
+        # if addr already connected:
+        return True
 
     def mainloop(self) -> None:
         while RUNNING:
@@ -76,5 +92,9 @@ class Server:
 
 
 if __name__ == "__main__":
+    print(f"`hear_audio` will playback on `speaker_id`: {CONFIG['audio']['speaker_id']}")
+    if CONFIG["networking"]["enforce_whitelist"]:
+        print(f"Using whitelist: {CONFIG.whitelist}")
+
     connector = Server()
     connector.mainloop()
