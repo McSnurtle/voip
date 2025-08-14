@@ -67,10 +67,15 @@ class Server:
                 print(f"Connection attempt was made from {addr, port} but they are not on the whitelist so they were denied. Future attempts from this client will not be logged here.")
                 self.denied.append(addr)
             return False
+
         elif addr not in list(self.clients.keys()):
             print(f"Accepting client {addr, port}! They will receive all future transmissions.")
             self.clients[addr] = port
             return True
+        elif addr in list(self.clients.keys()):
+            if self.clients[addr] != port:
+                print(f"A connection was temporarily interrupted from {addr} and the port was switched from {self.clients[addr]} to {port}.")
+                self.clients[addr] = port
         # if addr already connected:
         return True
 
