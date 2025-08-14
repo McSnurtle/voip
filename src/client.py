@@ -72,7 +72,8 @@ class Recorder:
             rate=RATE,
             input=True,
             frames_per_buffer=FRAMES_PER_BUFFER,
-            stream_callback=self.callback
+            stream_callback=self.callback,
+            input_device_index=DEVICE_ID
         )
 
     def callback(self, data: bytes, *args):
@@ -95,11 +96,6 @@ class Recorder:
         return b"".join(list(self.buffer.queue))
 
 
-def blocker() -> None:
-    time.sleep(3)
-    audio.write_data(recorder.history, path.mkpath(path.secrets_dir, "output.wav"))
-
-
 if __name__ == "__main__":
     target: tuple[str, int] = CONFIG["networking"]["server_ip"], CONFIG["networking"]["server_port"]
 
@@ -109,6 +105,7 @@ if __name__ == "__main__":
     connector = Client(target)
     recorder = Recorder()
 
+    # TODO: make this better:
     listener_thread: threading.Thread = threading.Thread(target=connector.listen, daemon=True)
     listener_thread.start()
 
