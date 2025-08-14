@@ -2,7 +2,6 @@
 import socket
 # import threading
 from threading import Thread
-from typing import Any
 
 import pyaudio
 import queue
