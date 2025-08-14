@@ -15,6 +15,41 @@ interface = pyaudio.PyAudio()
 silence_value: int = 0
 bogus_data: bytes = silence_value.to_bytes(2, byteorder="little") * config["audio"]["chunk_size"]
 
+# ========== Classes ==========
+class Recorder:
+    def __init__(self):
+        # recording
+        self.device = pyaudio.PyAudio()
+        self.buffer: queue.Queue[bytes] = queue.Queue()
+        self.stream = self.device.open(
+            format=pyaudio.paInt16,
+            channels=1,
+            rate=config["audio"]["sample_rate"],
+            input=True,
+            frames_per_buffer=(config["audio"]["chunk_size"] * config["audio"]["mystery_number"]),
+            stream_callback=self.callback,
+            input_device_index=config["audio"]["microphone_id"]
+        )
+
+    def callback(self, data: bytes, *args):
+        """A callback for PyAudio streams, registers the recorded chunk of audio to the recording buffer"""
+
+        self.buffer.put(data)
+        return bogus_data, pyaudio.paContinue
+
+    def terminate(self) -> None:
+        """Prepare all class variables for safe termination."""
+        self.buffer.task_done()
+        self.stream.stop_stream()
+        self.stream.close()
+        self.device.terminate()
+
+    @property
+    def history(self) -> bytes:
+        """The entire cannon of what was recorded since the PyAudio stream was initialized"""
+
+        return b"".join(list(self.buffer.queue))
+
 
 # ========== Functions ==========
 def format_audio(data: bytes) -> bytes:
