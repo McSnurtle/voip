@@ -24,6 +24,15 @@ class Config(dict):
             for key, value in config.items():
                 self[key] = value
 
+    @property
+    def whitelist(self) -> list[str]:
+        """Returns each ip from the `allowed` list in `usr/conf/whitelist.json`."""
+
+        with open(path.mkpath(path.secrets_dir, "conf", "whitelist.json"), "r") as fp:
+            _dict = json.load(fp)
+            return _dict["allowed"]
+
+
     def __getitem__(self, key: str) -> Any:
         return self.data[key]
 

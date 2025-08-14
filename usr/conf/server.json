@@ -1,13 +1,15 @@
 {
   "audio": {
     "sample_rate": 48000,
-    "chunk_size": 441,
+    "chunk_size": 512,
     "mystery_number": 1,
-    "hear_audio": false
+    "hear_audio": false,
+    "speaker_id": 0
   },
   "networking": {
     "server_ip": "0.0.0.0",
     "server_port": 20000,
+    "enforce_whitelist": true,
     "relay_audio": true
   }
 }
