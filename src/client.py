@@ -110,6 +110,7 @@ if __name__ == "__main__":
     connector = Client(target)
     recorder = Recorder()
 
+    # TODO: make this better:
     listener_thread: threading.Thread = threading.Thread(target=connector.listen, daemon=True)
     listener_thread.start()
 
