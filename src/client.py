@@ -2,11 +2,10 @@
 # imports - client.py, by Mc_Snurtle, based on Soko101's AudioStreamer
 import socket
 import pyaudio
-import time
 import threading
 import queue
 
-from utils import config_reader, audio, path
+from utils import config_reader, audio
 from typing import Any
 
 # ========== Constants ==========
