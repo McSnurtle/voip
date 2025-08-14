@@ -1,5 +1,5 @@
 # voip 📢
-A simple voice over internet protocol server and client written in python.
+A simple voice over internet protocol server and client written in python. A.k.a. a program to make calls.
 
 ## Installation / Quickstart Guide ⏱️
 Running voip requires [Python](<https://github.com/McSnurtle/voip.git>) (tested on version 3) and [C++ Redistributables](<https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170>) on Windows! Make sure you have them installed before doing anything.
