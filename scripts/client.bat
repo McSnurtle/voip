@@ -2,6 +2,6 @@
 
 echo "Running voip client..."
 
-call ./venv/bin/activate
+call .\venv\Scripts/activate
 
 python src/client.py
