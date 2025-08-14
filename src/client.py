@@ -28,7 +28,8 @@ class Client:
         Params:
             :param destination (tuple[str, int]): the IPv4 + port pair to connect with."""
 
-        # playback
+        # audio
+        self.recorder = audio.Recorder()
         self.playback_buffer: queue.Queue = queue.Queue()
         self.playback_thread = audio.play_stream(self.playback_buffer)
 
@@ -52,47 +53,22 @@ class Client:
             except OSError:
                 pass
 
+    def mainloop(self) -> None:
+        # TODO: make this better:
+        listener_thread: threading.Thread = threading.Thread(target=connector.listen, daemon=True)
+        listener_thread.start()
+
+        while RUNNING:
+            self.send_audio(self.recorder.buffer.get())
+
+        self.terminate()
+
     def terminate(self) -> None:
         global RUNNING
 
         RUNNING = False
         self.playback_buffer.shutdown()
         self.socket.close()
-
-
-class Recorder:
-    def __init__(self):
-        # recording
-        self.device = pyaudio.PyAudio()
-        self.buffer: queue.Queue[bytes] = queue.Queue()
-        self.stream = self.device.open(
-            format=FORMAT,
-            channels=CHANNELS,
-            rate=RATE,
-            input=True,
-            frames_per_buffer=FRAMES_PER_BUFFER,
-            stream_callback=self.callback,
-            input_device_index=DEVICE_ID
-        )
-
-    def callback(self, data: bytes, *args):
-        """A callback for PyAudio streams, registers the recorded chunk of audio to the recording buffer"""
-
-        self.buffer.put(data)
-        return audio.bogus_data, pyaudio.paContinue
-
-    def terminate(self) -> None:
-        """Prepare all class variables for safe termination."""
-        self.buffer.task_done()
-        self.stream.stop_stream()
-        self.stream.close()
-        self.device.terminate()
-
-    @property
-    def history(self) -> bytes:
-        """The entire cannon of what was recorded since the PyAudio stream was initialized"""
-
-        return b"".join(list(self.buffer.queue))
 
 
 if __name__ == "__main__":
@@ -104,11 +80,4 @@ if __name__ == "__main__":
     audio.get_default_speakers(True)
 
     connector = Client(target)
-    recorder = Recorder()
-
-    # TODO: make this better:
-    listener_thread: threading.Thread = threading.Thread(target=connector.listen, daemon=True)
-    listener_thread.start()
-
-    while RUNNING:
-        connector.send_audio(recorder.buffer.get())
+    connector.mainloop()
