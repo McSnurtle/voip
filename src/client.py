@@ -72,7 +72,8 @@ class Recorder:
             rate=RATE,
             input=True,
             frames_per_buffer=FRAMES_PER_BUFFER,
-            stream_callback=self.callback
+            stream_callback=self.callback,
+            input_device_index=DEVICE_ID
         )
 
     def callback(self, data: bytes, *args):
