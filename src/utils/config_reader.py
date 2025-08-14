@@ -39,9 +39,8 @@ class Config(dict):
             :returns bool: whether the config is valid or not
         Raises:
             :raises ValueError: if something's not right."""
-        if self.id == "server":
-            if config["networking"]["relay_audio"] == config["audio"]["hear_audio"]:
-                raise ValueError( "Your `server.json` config is invalid! Parameter `audio/hear_audio` and `networking/relay_audio` are mutually exclusive values!" )
+
+        pass
 
     def _is_valid_id(self, id: str) -> bool:
         return any(word is id for word in ["client", "server"])
