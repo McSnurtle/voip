@@ -57,7 +57,8 @@ def play_stream(stream: queue.Queue) -> threading.Thread:
         channels=1,
         rate=config["audio"]["sample_rate"],
         output=True,
-        frames_per_buffer=frames_per_buffer
+        frames_per_buffer=frames_per_buffer,
+        output_device_index=config["audio"]["speaker_id"]
     )
 
     def _play():

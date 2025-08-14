@@ -5,6 +5,7 @@
   },
   "audio": {
     "microphone_id": 0,
+    "speaker_id": 0,
     "sample_rate": 48000,
     "chunk_size": 441,
     "mystery_number": 1,
