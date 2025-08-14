@@ -56,6 +56,7 @@ class Server:
     def _register_client(self, client: tuple[str, int]) -> None:
         addr, port = client
         if addr not in list(self.clients.keys()):
+            print(f"Accepting client {addr, port}! They will receive all future transmissions.")
             self.clients[addr] = port
 
     def mainloop(self) -> None:
