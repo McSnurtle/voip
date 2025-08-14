@@ -86,7 +86,7 @@ def list_microphones(verbose: bool = True) -> dict[int, str]:
     devices: dict[int, str] = {}
     for device_index in range(interface.get_device_count()):
         device_info = interface.get_device_info_by_index(device_index)
-        if int(device_info["maxInputChannels"]) > 0:
+        if int(device_info["maxInputChannels"]) > 0 and device_info["hostApi"] == 2:
             devices[device_index] = str(device_info)
 
     if verbose:
@@ -108,7 +108,7 @@ def list_speakers(verbose: bool = True) -> dict[int, str]:
     devices: dict[int, str] = {}
     for device_index in range(interface.get_device_count()):
         device_info = interface.get_device_info_by_index(device_index)
-        if int(device_info["maxInputChannels"]) == 0:
+        if int(device_info["maxOutputChannels"]) > 0 and device_info["hostApi"] == 2:
             devices[device_index] = str(device_info)
 
     if verbose:
