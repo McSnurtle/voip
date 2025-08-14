@@ -104,6 +104,7 @@ if __name__ == "__main__":
     target: tuple[str, int] = CONFIG["networking"]["server_ip"], CONFIG["networking"]["server_port"]
 
     audio.list_microphones(True)
+    audio.list_speakers(True)
 
     connector = Client(target)
     recorder = Recorder()
