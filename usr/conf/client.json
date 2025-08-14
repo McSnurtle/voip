@@ -4,8 +4,8 @@
     "server_port": 20000
   },
   "audio": {
-    "microphone_id": 0,
-    "speaker_id": 0,
+    "microphone_id": null,
+    "speaker_id": null,
     "sample_rate": 44100,
     "chunk_size": 512,
     "mystery_number": 1,
