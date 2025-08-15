@@ -8,3 +8,6 @@ cd "$SCRIPT_DIR/.." || exit 1
 source ./venv/bin/activate
 
 python src/client.py
+
+read -p "Press enter to continue..."
+
