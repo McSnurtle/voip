@@ -2,16 +2,73 @@
 import threading
 import queue
 import wave
-from typing import Any
+from typing import (Any, Union)
 
 import pyaudio
 
 from utils import config_reader
 
+
+# ========== Annoying Functions ==========
+def get_default_microphone(verbose: bool = False) -> Union[Any, dict]:
+    """Collects all playback devices connected to the host system.
+
+    Params:
+        :param verbose: (bool) whether to print the results to the console.
+    Returns:
+        :return: (dict[int, str]) a dictionary of PyAudio device id to device name."""
+
+    default_id: int = int(interface.get_default_input_device_info()["index"])   # PYRIGHT SHUTUP
+    default_info = interface.get_device_info_by_index(default_id)
+
+    if verbose:
+        print(f"\n\nThe default microphone is:\n\n{default_info}")
+
+    return default_info
+
+
+def get_default_speakers(verbose: bool = False) -> Union[Any, dict]:
+    """Collects all playback devices connected to the host system.
+
+    Params:
+        :param verbose: (bool) whether to print the results to the console.
+    Returns:
+        :return: (dict[int, str]) a dictionary of PyAudio device id to device name."""
+
+    default_id: int = int(interface.get_default_output_device_info()["index"])   # PYRIGHT SHUTUP
+    default_info = interface.get_device_info_by_index(default_id)
+
+    if verbose:
+        print(f"\n\nThe default speaker is:\n\n{default_info}")
+
+    return default_info
+
+
+def get_default_host_api(verbose: bool = False) -> int:
+    """Returns the integer representing the system default Host API.
+
+    Params:
+        :param verbose: (bool) whether to print the results to the console.
+    Returns:
+        :returns int: the system default host API."""
+
+    host_api_info: Any = interface.get_default_host_api_info()
+
+    if verbose:
+        print(f"\n\nDefault Host API:\n\n{host_api}")
+
+    return host_api_info["index"]
+
+
 # ========== Variables ==========
 config: dict[str, Any] = config_reader.Config("client")
 frames_per_buffer: int = config["audio"]["chunk_size"] * config["audio"]["mystery_number"]
 interface = pyaudio.PyAudio()
+host_api = interface.get_default_host_api_info()
+speaker_id: int | None = config["audio"]["speaker_id"]
+if speaker_id is None:
+    speaker_id = int(get_default_speakers()["index"])
+channel_count: int = int(interface.get_device_info_by_index(speaker_id)["maxOutputChannels"])
 silence_value: int = 0
 bogus_data: bytes = silence_value.to_bytes(2, byteorder="little") * config["audio"]["chunk_size"]
 
@@ -90,7 +147,7 @@ def play_stream(stream: queue.Queue) -> threading.Thread:
 
     playback_stream = interface.open(
         format=pyaudio.paInt16,
-        channels=1,
+        channels=channel_count,
         rate=config["audio"]["sample_rate"],
         output=True,
         frames_per_buffer=frames_per_buffer,
@@ -99,7 +156,7 @@ def play_stream(stream: queue.Queue) -> threading.Thread:
 
     def _play():
         while True:
-            data = stream.get()
+            data = stream.get() * channel_count
             if data is None:
                 break
             playback_stream.write(data)
@@ -122,7 +179,7 @@ def list_microphones(verbose: bool = True) -> dict[int, str]:
     devices: dict[int, str] = {}
     for device_index in range(interface.get_device_count()):
         device_info = interface.get_device_info_by_index(device_index)
-        if int(device_info["maxInputChannels"]) > 0 and device_info["hostApi"] == 2:
+        if int(device_info["maxInputChannels"]) > 0 and device_info["hostApi"] == get_default_host_api():
             devices[device_index] = str(device_info)
 
     if verbose:
@@ -144,7 +201,7 @@ def list_speakers(verbose: bool = True) -> dict[int, str]:
     devices: dict[int, str] = {}
     for device_index in range(interface.get_device_count()):
         device_info = interface.get_device_info_by_index(device_index)
-        if int(device_info["maxOutputChannels"]) > 0 and device_info["hostApi"] == 2:
+        if int(device_info["maxOutputChannels"]) > 0 and device_info["hostApi"] == get_default_host_api():
             devices[device_index] = str(device_info)
 
     if verbose:
@@ -153,37 +210,3 @@ def list_speakers(verbose: bool = True) -> dict[int, str]:
             print(f"{idx}: {value}\n")
 
     return devices
-
-
-def get_default_microphone(verbose: bool = True) -> dict:
-    """Collects all playback devices connected to the host system.
-
-    Params:
-        :param verbose: (bool) whether to print the results to the console.
-    Returns:
-        :return: (dict[int, str]) a dictionary of PyAudio device id to device name."""
-
-    default_id: int = int(interface.get_default_input_device_info()["index"])   # PYRIGHT SHUTUP
-    default_info = interface.get_device_info_by_index(default_id)
-
-    if verbose:
-        print(f"\n\nThe default microphone is:\n\n{default_info}")
-
-    return default_info
-
-
-def get_default_speakers(verbose: bool = True) -> dict:
-    """Collects all playback devices connected to the host system.
-
-    Params:
-        :param verbose: (bool) whether to print the results to the console.
-    Returns:
-        :return: (dict[int, str]) a dictionary of PyAudio device id to device name."""
-
-    default_id: int = int(interface.get_default_output_device_info()["index"])   # PYRIGHT SHUTUP
-    default_info = interface.get_device_info_by_index(default_id)
-
-    if verbose:
-        print(f"\n\nThe default speaker is:\n\n{default_info}")
-
-    return default_info
