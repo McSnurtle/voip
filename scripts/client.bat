@@ -8,3 +8,6 @@ cd /d "%SCRIPT_DIR%\.."
 call .\venv\Scripts\activate
 
 python src/client.py
+
+pause
+

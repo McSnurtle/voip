@@ -8,3 +8,6 @@ cd "$SCRIPT_DIR/.." || exit 1
 source ./venv/bin/activate
 
 python src/server.py
+
+read -p "Press enter to continue..."
+
