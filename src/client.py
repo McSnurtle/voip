@@ -78,6 +78,7 @@ if __name__ == "__main__":
     audio.list_speakers(True)
     audio.get_default_microphone(True)
     audio.get_default_speakers(True)
+    audio.get_default_host_api(True)
 
     connector = Client(target)
     connector.mainloop()
