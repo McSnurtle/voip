@@ -48,7 +48,7 @@ def get_default_host_api(verbose: bool = False) -> int:
     """Returns the integer representing the system default Host API.
 
     Params:
-        :param verbose: (bool) whether to print the results to the console.
+        :param verbose: (bool) whether to print the hostAPI's _PaDeviceInfo object to the console.
     Returns:
         :returns int: the system default host API."""
 
@@ -65,10 +65,6 @@ config: dict[str, Any] = config_reader.Config("client")
 frames_per_buffer: int = config["audio"]["chunk_size"] * config["audio"]["mystery_number"]
 interface = pyaudio.PyAudio()
 host_api = interface.get_default_host_api_info()
-speaker_id: int | None = config["audio"]["speaker_id"]
-if speaker_id is None:
-    speaker_id = int(get_default_speakers()["index"])
-channel_count: int = int(interface.get_device_info_by_index(speaker_id)["maxOutputChannels"])
 silence_value: int = 0
 bogus_data: bytes = silence_value.to_bytes(2, byteorder="little") * config["audio"]["chunk_size"]
 
@@ -147,7 +143,7 @@ def play_stream(stream: queue.Queue) -> threading.Thread:
 
     playback_stream = interface.open(
         format=pyaudio.paInt16,
-        channels=channel_count,
+        channels=1,
         rate=config["audio"]["sample_rate"],
         output=True,
         frames_per_buffer=frames_per_buffer,
@@ -156,7 +152,7 @@ def play_stream(stream: queue.Queue) -> threading.Thread:
 
     def _play():
         while True:
-            data = stream.get() * channel_count
+            data = stream.get() # * channel_count
             if data is None:
                 break
             playback_stream.write(data)
